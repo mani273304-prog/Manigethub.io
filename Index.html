@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manishankar Patel | Papercut Portfolio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Quicksand for a soft, rounded, friendly feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                        heading: ['Fredoka', 'sans-serif'],
+                    },
+                    colors: {
+                        paper: {
+                            sky: '#e0f2fe',
+                            cloud: '#ffffff',
+                            sun: '#fde047',
+                            green: '#dcfce7',
+                            greenDark: '#bbf7d0',
+                            orange: '#ffedd5',
+                            pink: '#fce7f3',
+                            text: '#334155',
+                            textLight: '#64748b',
+                            card: '#f8fafc'
+                        }
+                    },
+                    boxShadow: {
+                        'paper': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), inset 0 2px 0 rgba(255, 255, 255, 0.7)',
+                        'paper-lg': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), inset 0 2px 0 rgba(255, 255, 255, 0.7)',
+                        'paper-inset': 'inset 0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 1px 0 rgba(255,255,255,0.8)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base styles */
+        body {
+            background-color: #e0f2fe; /* Sky blue base */
+            color: #334155;
+            overflow-x: hidden;
+        }
+
+        /* Paper texture overlay (subtle) */
+        .paper-texture {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.4;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            mix-blend-mode: multiply;
+        }
+
+        /* Utility classes for paper cutouts */
+        .cutout-shape {
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.12)) drop-shadow(0 2px 4px rgba(0,0,0,0.08));
+            transition: transform 0.3s ease;
+        }
+        
+        .cutout-shape:hover {
+            transform: translateY(-5px);
+            filter: drop-shadow(0 12px 16px rgba(0,0,0,0.15)) drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        @keyframes float-slow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes sway {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+        @keyframes sway-hanging {
+            0%, 100% { transform: rotate(-5deg); transform-origin: top center; }
+            50% { transform: rotate(5deg); transform-origin: top center; }
+        }
+        
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
+        .animate-sway { animation: sway 5s ease-in-out infinite; }
+        .animate-sway-hanging { animation: sway-hanging 4s ease-in-out infinite; }
+
+        .delay-1 { animation-delay: 1s; }
+        .delay-2 { animation-delay: 2s; }
+        .delay-3 { animation-delay: 3s; }
+
+        /* Scroll Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Section Dividers */
+        .wave-divider {
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            transform: rotate(180deg);
+            z-index: 10;
+        }
+        .wave-divider svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 120px;
+        }
+
+        /* Hanging strings */
+        .thread {
+            position: absolute;
+            top: -100px;
+            width: 2px;
+            height: 100px;
+            background: rgba(0,0,0,0.1);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+        }
+        
+        /* Interactive Card */
+        .paper-card {
+            background-color: white;
+            border-radius: 1.5rem;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        .paper-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 1.5rem;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.05);
+            pointer-events: none;
+            z-index: 2;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-paper-sun selection:text-paper-text">
+
+    <div class="paper-texture"></div>
+
+    <!-- Sticky Navigation -->
+    <nav class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-2xl transition-all duration-300" id="navbar">
+        <div class="bg-white/80 backdrop-blur-md px-6 py-3 rounded-full shadow-paper border border-white/40 flex justify-between items-center">
+            <a href="#home" class="font-heading font-bold text-xl text-indigo-500 tracking-wide cutout-shape" style="filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));">MP</a>
+            <div class="hidden md:flex space-x-6 text-sm font-semibold text-slate-500">
+                <a href="#about" class="hover:text-indigo-500 transition-colors">About</a>
+                <a href="#education" class="hover:text-indigo-500 transition-colors">Education</a>
+                <a href="#skills" class="hover:text-indigo-500 transition-colors">Skills</a>
+                <a href="#contact" class="hover:text-indigo-500 transition-colors">Contact</a>
+            </div>
+            <!-- Mobile Menu Button -->
+            <button class="md:hidden text-slate-500 hover:text-indigo-500 focus:outline-none" id="mobile-menu-btn">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden absolute top-16 left-0 w-full bg-white rounded-2xl shadow-paper-lg p-4 flex flex-col space-y-4 text-center font-semibold text-slate-500 border border-slate-100">
+            <a href="#about" class="hover:text-indigo-500 transition-colors mobile-link">About</a>
+            <a href="#education" class="hover:text-indigo-500 transition-colors mobile-link">Education</a>
+            <a href="#skills" class="hover:text-indigo-500 transition-colors mobile-link">Skills</a>
+            <a href="#contact" class="hover:text-indigo-500 transition-colors mobile-link">Contact</a>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center pt-20 pb-32 bg-paper-sky overflow-hidden">
+        
+        <!-- Paper Background Elements -->
+        <!-- Sun -->
+        <div class="absolute top-24 right-10 md:right-32 w-32 h-32 md:w-48 md:h-48 bg-paper-sun rounded-full cutout-shape animate-float-slow z-0"></div>
+        
+        <!-- Clouds (SVG) -->
+        <svg class="absolute top-32 left-[-5%] w-48 md:w-64 fill-white cutout-shape animate-float delay-1 z-10" viewBox="0 0 24 24"><path d="M17.5 19c2.485 0 4.5-2.015 4.5-4.5S19.985 10 17.5 10c-.17 0-.337.01-.502.029C16.326 6.551 13.411 4 9.88 4 5.528 4 2 7.528 2 11.88c0 .285.015.567.045.845C1.442 13.111 1 13.799 1 14.5 1 15.88 2.12 17 3.5 17h14z"/></svg>
+        <svg class="absolute top-48 right-10 w-32 md:w-48 fill-white cutout-shape animate-float delay-2 z-10" viewBox="0 0 24 24"><path d="M17.5 19c2.485 0 4.5-2.015 4.5-4.5S19.985 10 17.5 10c-.17 0-.337.01-.502.029C16.326 6.551 13.411 4 9.88 4 5.528 4 2 7.528 2 11.88c0 .285.015.567.045.845C1.442 13.111 1 13.799 1 14.5 1 15.88 2.12 17 3.5 17h14z"/></svg>
+        <svg class="absolute bottom-64 left-1/4 w-40 fill-white/80 cutout-shape animate-float delay-3 z-0" viewBox="0 0 24 24"><path d="M17.5 19c2.485 0 4.5-2.015 4.5-4.5S19.985 10 17.5 10c-.17 0-.337.01-.502.029C16.326 6.551 13.411 4 9.88 4 5.528 4 2 7.528 2 11.88c0 .285.015.567.045.845C1.442 13.111 1 13.799 1 14.5 1 15.88 2.12 17 3.5 17h14z"/></svg>
+
+        <!-- Floating Lab Equipment (Paper Style) -->
+        <div class="absolute bottom-40 right-1/4 animate-sway-hanging z-20 hidden md:block">
+            <div class="thread"></div>
+            <div class="w-16 h-24 bg-indigo-100 rounded-b-3xl rounded-t-lg relative cutout-shape border-4 border-white flex items-end justify-center pb-2">
+                <div class="w-12 h-12 bg-indigo-400 rounded-b-2xl opacity-80"></div>
+                <!-- Bubbles -->
+                <div class="absolute top-10 left-3 w-2 h-2 bg-white rounded-full animate-float"></div>
+                <div class="absolute top-14 right-4 w-1.5 h-1.5 bg-white rounded-full animate-float delay-1"></div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="relative z-30 text-center px-4 max-w-4xl mx-auto mt-10">
+            <div class="bg-white p-8 md:p-12 rounded-[3rem] shadow-paper-lg mx-auto transform transition hover:-translate-y-2 duration-500 relative flex flex-col md:flex-row items-center gap-8">
+                <!-- Decorative push pin -->
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-red-400 shadow-md inset-shadow border-2 border-white z-40">
+                     <div class="absolute top-1 left-1 w-2 h-2 bg-white/60 rounded-full"></div>
+                </div>
+
+                <!-- Profile Photo Area -->
+                <div class="relative flex-shrink-0 z-10 w-48 h-48 md:w-64 md:h-64 cutout-shape animate-float-slow">
+                    <!-- Decorative background shapes behind photo -->
+                    <div class="absolute inset-0 bg-orange-200 rounded-full rotate-6 shadow-paper-inset transform translate-x-2 translate-y-2"></div>
+                    <div class="absolute inset-0 bg-emerald-200 rounded-full -rotate-6 shadow-paper-inset transform -translate-x-2 -translate-y-2"></div>
+                    
+                    <!-- The Photo Container -->
+                    <div class="absolute inset-0 rounded-full overflow-hidden border-8 border-white shadow-paper bg-slate-100 relative group">
+                        <!-- Adding the uploaded image -->
+                        <img src="https://storage.googleapis.com/gweb-cloudblog-publish/original_images/Manishankar_Patel.jpg" 
+                             alt="Manishankar Patel" 
+                             class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-110"
+                             onerror="this.src='https://placehold.co/400x400/e2e8f0/64748b?text=MP'"
+                             style="object-position: center 20%;"
+                        />
+                    </div>
+                </div>
+
+                <!-- Text Content -->
+                <div class="text-center md:text-left flex-1">
+                    <h2 class="text-indigo-500 font-bold tracking-wider uppercase text-sm mb-3">Welcome to my world</h2>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-slate-700 mb-4 leading-tight">
+                        Hi, I'm <span class="text-orange-500 block mt-2">Manishankar Patel</span>
+                    </h1>
+                    <h3 class="text-xl md:text-2xl font-semibold text-slate-500 mb-6">BMLS 2nd Year Student</h3>
+                    
+                    <p class="text-slate-500 mb-8 text-lg leading-relaxed bg-slate-50 p-4 rounded-2xl shadow-paper-inset inline-block">
+                        "Learning medical laboratory science with curiosity, skill, and a growing passion for AI."
+                    </p>
+                    <br/>
+                    <a href="#about" class="inline-block bg-orange-400 hover:bg-orange-500 text-white font-bold py-3 px-8 rounded-full shadow-paper transition-all hover:scale-105">
+                        Explore My Portfolio <i class="fas fa-arrow-down ml-2 animate-bounce"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wave transition to green section -->
+        <div class="wave-divider">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" style="fill: #dcfce7;">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- ABOUT & EDUCATION SECTION -->
+    <section id="about" class="relative py-24 bg-paper-green overflow-hidden">
+        
+        <!-- Paper Trees Decoration -->
+        <div class="absolute top-20 left-10 md:left-20 w-24 h-32 cutout-shape animate-sway origin-bottom z-10 opacity-70">
+            <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-12 bg-amber-700/80 rounded-sm"></div>
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-24 bg-emerald-400 rounded-full shadow-paper-inset"></div>
+            <div class="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-16 bg-emerald-300 rounded-full shadow-paper-inset"></div>
+        </div>
+        
+        <div class="absolute bottom-20 right-10 md:right-20 w-32 h-40 cutout-shape animate-sway delay-2 origin-bottom z-10 opacity-70 hidden md:block">
+            <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-16 bg-amber-700/80 rounded-sm"></div>
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-emerald-500 rounded-full shadow-paper-inset"></div>
+            <div class="absolute top-6 left-1/2 -translate-x-1/2 w-20 h-20 bg-emerald-400 rounded-full shadow-paper-inset"></div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-6 relative z-20">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                
+                <!-- About Me -->
+                <div class="reveal paper-card shadow-paper-lg p-8 md:p-10 border border-white">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center shadow-paper-inset mr-4">
+                            <i class="fas fa-user text-emerald-500 text-xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-heading font-bold text-slate-700">About Me</h2>
+                    </div>
+                    <p class="text-slate-600 text-lg leading-relaxed mb-4">
+                        Hello! I am <strong class="text-emerald-600">Manishankar Patel</strong>, a passionate and dedicated student currently pursuing my studies at <strong class="text-slate-700">Divya College of Health Sciences</strong>.
+                    </p>
+                    <p class="text-slate-600 text-lg leading-relaxed mb-4">
+                        My journey is driven by a strong interest in healthcare learning and practical laboratory work. I am fascinated by the microscopic world and how diagnostics form the backbone of medical treatments.
+                    </p>
+                    <p class="text-slate-600 text-lg leading-relaxed">
+                        Beyond the lab, I am an enthusiastic explorer of <strong class="text-orange-500">Artificial Intelligence</strong>. I enjoy discovering how new AI technologies can be integrated with healthcare to improve accuracy and efficiency.
+                    </p>
+                </div>
+
+                <!-- Education -->
+                <div id="education" class="reveal delay-1">
+                    <div class="paper-card shadow-paper-lg p-8 md:p-10 border border-white h-full relative overflow-hidden">
+                        
+                        <!-- Decorative background element -->
+                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-emerald-50 rounded-full shadow-paper-inset z-0"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="flex items-center mb-8">
+                                <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center shadow-paper-inset mr-4">
+                                    <i class="fas fa-graduation-cap text-indigo-500 text-xl"></i>
+                                </div>
+                                <h2 class="text-3xl font-heading font-bold text-slate-700">Education</h2>
+                            </div>
+                            
+                            <!-- Timeline paper style -->
+                            <div class="relative border-l-4 border-emerald-200 ml-6 pl-8 py-2">
+                                <div class="absolute w-6 h-6 bg-emerald-400 rounded-full shadow-paper -left-[15px] top-4 border-4 border-white"></div>
+                                <h3 class="text-2xl font-bold text-slate-700 mb-1">Bachelor of Medical Laboratory Science (BMLS)</h3>
+                                <p class="text-emerald-600 font-bold mb-3">2nd Year Student</p>
+                                
+                                <div class="bg-slate-50 p-4 rounded-xl shadow-paper-inset flex items-start mt-4">
+                                    <i class="fas fa-university text-slate-400 mt-1 mr-3"></i>
+                                    <div>
+                                        <h4 class="font-bold text-slate-700">Divya College of Health Sciences</h4>
+                                        <p class="text-sm text-slate-500">Currently acquiring comprehensive knowledge in modern diagnostic methodologies and practical laboratory management.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Wave transition to Orange section -->
+        <div class="wave-divider" style="transform: rotate(180deg); bottom: -2px;">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" style="fill: #ffedd5;">
+                <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V3C1132.19,29.09,1055.71,21.31,985.66,92.83Z"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- LAB SKILLS & INTERESTS -->
+    <section id="skills" class="relative py-24 bg-paper-orange overflow-hidden">
+        
+        <!-- Background hanging elements -->
+        <div class="absolute top-10 left-1/4 animate-sway-hanging z-10 opacity-60">
+            <div class="thread"></div>
+            <div class="w-12 h-12 bg-white rounded-full cutout-shape flex items-center justify-center text-orange-400">
+                <i class="fas fa-microscope"></i>
+            </div>
+        </div>
+        <div class="absolute top-10 right-1/4 animate-sway-hanging delay-2 z-10 opacity-60 hidden md:block">
+            <div class="thread" style="height: 150px; top: -150px;"></div>
+            <div class="w-12 h-12 bg-white rounded-full cutout-shape flex items-center justify-center text-rose-400">
+                <i class="fas fa-dna"></i>
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-6 relative z-20">
+            
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl font-heading font-bold text-slate-700 inline-block relative">
+                    My Laboratory Skills
+                    <div class="absolute -bottom-3 left-0 w-full h-2 bg-orange-300 rounded-full shadow-paper-inset transform -rotate-1"></div>
+                </h2>
+                <p class="mt-6 text-slate-600 text-lg">Hands-on experience in various diagnostic disciplines.</p>
+            </div>
+
+            <!-- Skills Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 mb-20">
+                
+                <!-- Skill 1 -->
+                <div class="reveal paper-card shadow-paper p-6 text-center group hover:-translate-y-2">
+                    <div class="w-16 h-16 mx-auto bg-orange-100 rounded-2xl flex items-center justify-center mb-4 shadow-paper-inset transform group-hover:rotate-6 transition-transform">
+                        <i class="fas fa-virus text-orange-500 text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-700 text-lg">Microbiology</h3>
+                </div>
+
+                <!-- Skill 2 -->
+                <div class="reveal delay-1 paper-card shadow-paper p-6 text-center group hover:-translate-y-2">
+                    <div class="w-16 h-16 mx-auto bg-rose-100 rounded-2xl flex items-center justify-center mb-4 shadow-paper-inset transform group-hover:-rotate-6 transition-transform">
+                        <i class="fas fa-layer-group text-rose-500 text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-700 text-lg">Histopathology</h3>
+                </div>
+
+                <!-- Skill 3 -->
+                <div class="reveal delay-2 paper-card shadow-paper p-6 text-center group hover:-translate-y-2">
+                    <div class="w-16 h-16 mx-auto bg-blue-100 rounded-2xl flex items-center justify-center mb-4 shadow-paper-inset transform group-hover:rotate-6 transition-transform">
+                        <i class="fas fa-flask text-blue-500 text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-700 text-lg">Biochemistry</h3>
+                </div>
+
+                <!-- Skill 4 -->
+                <div class="reveal paper-card shadow-paper p-6 text-center group hover:-translate-y-2">
+                    <div class="w-16 h-16 mx-auto bg-emerald-100 rounded-2xl flex items-center justify-center mb-4 shadow-paper-inset transform group-hover:-rotate-6 transition-transform">
+                        <i class="fas fa-vial text-emerald-500 text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-700 text-lg">Clinical Pathology</h3>
+                </div>
+
+                <!-- Skill 5 -->
+                <div class="reveal delay-1 paper-card shadow-paper p-6 text-center group hover:-translate-y-2">
+                    <div class="w-16 h-16 mx-auto bg-purple-100 rounded-2xl flex items-center justify-center mb-4 shadow-paper-inset transform group-hover:rotate-6 transition-transform">
+                        <i class="fas fa-syringe text-purple-500 text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-700 text-lg">Sample Collection</h3>
+                </div>
+
+                <!-- Skill 6 -->
+                <div class="reveal delay-2 paper-card shadow-paper p-6 text-center group hover:-translate-y-2">
+                    <div class="w-16 h-16 mx-auto bg-indigo-100 rounded-2xl flex items-center justify-center mb-4 shadow-paper-inset transform group-hover:-rotate-6 transition-transform">
+                        <i class="fas fa-qrcode text-indigo-500 text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-700 text-lg">Vibe Coding</h3>
+                </div>
+
+            </div>
+
+            <!-- Interests & AI -->
+            <div class="reveal paper-card shadow-paper-lg p-8 md:p-12 border border-white">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-3xl font-heading font-bold text-slate-700 mb-6">Current Interests</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-center text-lg text-slate-600 bg-orange-50/50 p-3 rounded-lg shadow-paper-inset">
+                                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm mr-4 text-orange-500">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                Exploring AI tools in diagnostics
+                            </li>
+                            <li class="flex items-center text-lg text-slate-600 bg-orange-50/50 p-3 rounded-lg shadow-paper-inset">
+                                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm mr-4 text-orange-500">
+                                    <i class="fas fa-laptop-code"></i>
+                                </div>
+                                Learning new technologies
+                            </li>
+                            <li class="flex items-center text-lg text-slate-600 bg-orange-50/50 p-3 rounded-lg shadow-paper-inset">
+                                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm mr-4 text-orange-500">
+                                    <i class="fas fa-microscope"></i>
+                                </div>
+                                Improving practical lab knowledge
+                            </li>
+                            <li class="flex items-center text-lg text-slate-600 bg-orange-50/50 p-3 rounded-lg shadow-paper-inset">
+                                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm mr-4 text-orange-500">
+                                    <i class="fas fa-seedling"></i>
+                                </div>
+                                Growing professionally & personally
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="relative flex justify-center">
+                        <!-- Paper AI/Tech illustration -->
+                        <div class="w-48 h-48 bg-white rounded-full shadow-paper-lg flex items-center justify-center relative cutout-shape">
+                            <div class="absolute inset-2 bg-indigo-50 rounded-full shadow-paper-inset border-2 border-dashed border-indigo-200"></div>
+                            <i class="fas fa-brain text-6xl text-indigo-400 relative z-10 animate-float"></i>
+                            
+                            <!-- Orbiting dots -->
+                            <div class="absolute w-full h-full animate-spin" style="animation-duration: 8s;">
+                                <div class="absolute -top-2 left-1/2 w-4 h-4 bg-orange-400 rounded-full shadow-sm"></div>
+                            </div>
+                            <div class="absolute w-full h-full animate-spin" style="animation-duration: 12s; animation-direction: reverse;">
+                                <div class="absolute bottom-4 left-4 w-3 h-3 bg-blue-400 rounded-full shadow-sm"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Wave transition to Pink section -->
+        <div class="wave-divider" style="transform: rotate(180deg); bottom: -2px;">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" style="fill: #fce7f3;">
+                <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- CAREER GOAL & CONTACT -->
+    <section id="contact" class="relative pt-24 pb-32 bg-paper-pink overflow-hidden">
+        
+        <!-- Twilight decorations (Moon and Stars) -->
+        <div class="absolute top-20 right-20 w-24 h-24 bg-white rounded-full cutout-shape shadow-paper-lg z-10 hidden md:block">
+            <!-- Crescent mask to make a moon -->
+            <div class="absolute top-2 right-4 w-20 h-20 bg-paper-pink rounded-full border border-transparent"></div>
+        </div>
+        
+        <i class="fas fa-star absolute top-32 left-1/4 text-white text-xl animate-float delay-1 z-10 opacity-70"></i>
+        <i class="fas fa-star absolute top-16 left-1/2 text-white text-sm animate-float delay-2 z-10 opacity-60"></i>
+        <i class="fas fa-star absolute bottom-40 right-1/3 text-white text-lg animate-float z-10 opacity-80"></i>
+
+        <div class="max-w-4xl mx-auto px-6 relative z-20">
+            
+            <!-- Career Goal Banner -->
+            <div class="reveal bg-gradient-to-r from-rose-400 to-orange-400 p-1 rounded-3xl shadow-paper-lg mb-16 transform -rotate-1 hover:rotate-0 transition-transform">
+                <div class="bg-white p-8 md:p-10 rounded-[1.4rem] text-center shadow-paper-inset h-full">
+                    <div class="inline-block bg-rose-100 text-rose-600 px-4 py-1 rounded-full text-sm font-bold uppercase tracking-widest mb-4 shadow-sm">Career Goal</div>
+                    <p class="text-xl md:text-2xl font-medium text-slate-700 leading-relaxed font-heading">
+                        “My career goal is to become a successful <span class="text-rose-500 font-bold">Lab Technician</span> and continue improving my skills in medical laboratory sciences while also exploring modern technology and AI.”
+                    </p>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="reveal delay-1 paper-card shadow-paper-lg p-8 md:p-12 border border-white">
+                <h2 class="text-3xl font-heading font-bold text-center text-slate-700 mb-10">Get In Touch</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
+                    <!-- Phone -->
+                    <div class="bg-slate-50 p-6 rounded-2xl text-center shadow-paper-inset group">
+                        <div class="w-12 h-12 mx-auto bg-white rounded-full flex items-center justify-center shadow-paper mb-4 text-indigo-500 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-700 mb-1">Phone</h4>
+                        <a href="tel:8810925971" class="text-slate-600 hover:text-indigo-500 transition-colors">8810925971</a>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="bg-slate-50 p-6 rounded-2xl text-center shadow-paper-inset group">
+                        <div class="w-12 h-12 mx-auto bg-white rounded-full flex items-center justify-center shadow-paper mb-4 text-rose-500 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-700 mb-1">Email</h4>
+                        <a href="mailto:mani7905652@gmail.com" class="text-slate-600 hover:text-rose-500 transition-colors text-sm md:text-base break-words">mani7905652@gmail.com</a>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="bg-slate-50 p-6 rounded-2xl text-center shadow-paper-inset group">
+                        <div class="w-12 h-12 mx-auto bg-white rounded-full flex items-center justify-center shadow-paper mb-4 text-emerald-500 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-700 mb-1">Location</h4>
+                        <p class="text-slate-600">Nichlaul, Maharajganj</p>
+                    </div>
+
+                </div>
+                
+                <!-- Send Message Button Mock -->
+                <div class="mt-10 text-center">
+                    <button onclick="showMessage()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-8 rounded-full shadow-paper transition-all hover:-translate-y-1">
+                        Say Hello <i class="fas fa-paper-plane ml-2"></i>
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Bottom curved ground -->
+        <div class="absolute bottom-0 left-0 w-full h-16 bg-white shadow-[0_-5px_15px_rgba(0,0,0,0.05)] rounded-t-[50%] scale-110"></div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white py-6 text-center text-slate-500 text-sm relative z-30">
+        <p>&copy; 2026 Manishankar Patel. Crafted with <i class="fas fa-heart text-rose-400 mx-1 animate-pulse"></i> and paper aesthetics.</p>
+    </footer>
+
+    <!-- Custom Message Modal (Replacing alert) -->
+    <div id="message-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-white p-8 rounded-3xl shadow-paper-lg max-w-sm w-full mx-4 transform scale-90 transition-transform duration-300" id="modal-content">
+            <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-paper-inset text-emerald-500 text-2xl">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-center text-slate-700 mb-2">Hello!</h3>
+            <p class="text-center text-slate-600 mb-6">Thanks for visiting my portfolio. Feel free to contact me via phone or email directly!</p>
+            <button onclick="closeMessage()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-xl shadow-sm transition-colors">
+                Awesome!
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Smooth Scrolling for Navigation Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    // Close mobile menu if open
+                    const mobileMenu = document.getElementById('mobile-menu');
+                    if(!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Sticky Navbar styling on scroll
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('top-2');
+                navbar.classList.remove('top-4');
+                navbar.firstElementChild.classList.add('shadow-paper-lg');
+                navbar.firstElementChild.classList.remove('shadow-paper');
+            } else {
+                navbar.classList.add('top-4');
+                navbar.classList.remove('top-2');
+                navbar.firstElementChild.classList.add('shadow-paper');
+                navbar.firstElementChild.classList.remove('shadow-paper-lg');
+            }
+        });
+
+        // Scroll Reveal Animation using Intersection Observer
+        const revealElements = document.querySelectorAll('.reveal');
+        
+        const revealOptions = {
+            threshold: 0.15,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    // Optional: stop observing once revealed
+                    // observer.unobserve(entry.target);
+                }
+            });
+        }, revealOptions);
+
+        revealElements.forEach(el => {
+            revealObserver.observe(el);
+        });
+
+        // Custom Modal Logic (Replacing alert)
+        const modal = document.getElementById('message-modal');
+        const modalContent = document.getElementById('modal-content');
+
+        function showMessage() {
+            modal.classList.remove('hidden');
+            // Trigger reflow
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            modalContent.classList.remove('scale-90');
+            modalContent.classList.add('scale-100');
+        }
+
+        function closeMessage() {
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-90');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300); // match duration
+        }
+        
+        // Close modal on outside click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeMessage();
+            }
+        });
+    </script>
+</body>
+</html>
